@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79db51d8b57dd9d4a9e0969c18e63e5a, type: 3}
   m_Name: SpriteAnimCfg
   m_EditorClassIdentifier: 
-  sequences:
-  - track: 0
-    sprites:
+  Sequences:
+  - Track: 0
+    Sprites:
     - {fileID: -1135281878, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
     - {fileID: -2007982308, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
     - {fileID: 1000570911, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
@@ -26,8 +26,8 @@ MonoBehaviour:
     - {fileID: -1840513493, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
     - {fileID: 1385032923, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
     - {fileID: 623602634, guid: 445f456e4b154514898d79d71b55c05f, type: 3}
-  - track: 1
-    sprites:
+  - Track: 1
+    Sprites:
     - {fileID: 799356515, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
     - {fileID: -984996385, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
     - {fileID: -1612928255, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
@@ -46,7 +46,7 @@ MonoBehaviour:
     - {fileID: -2076499864, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
     - {fileID: 1138995981, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
     - {fileID: -1029096143, guid: 2b22e58cf7fbd7946b874f61d6cbbebc, type: 3}
-  - track: 2
-    sprites:
+  - Track: 2
+    Sprites:
     - {fileID: 1971817273, guid: 5d2d7f4ab1e201048be99e1dc5fc3488, type: 3}
     - {fileID: -58052489, guid: 5d2d7f4ab1e201048be99e1dc5fc3488, type: 3}

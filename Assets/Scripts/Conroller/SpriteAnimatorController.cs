@@ -8,30 +8,30 @@ namespace PlatformerMVC
     {
         private sealed class Animation
         {
-            public AnimState track;
-            public List<Sprite> sprites;
-            public bool loop;
-            public float speed = 10;
-            public float counter = 0;
-            public bool sleep;
+            public AnimState Track;
+            public List<Sprite> Sprites;
+            public bool Loop;
+            public float Speed = 10;
+            public float Counter = 0;
+            public bool Sleep;
 
             public void Update()
             {
-                if (sleep) return;
+                if (Sleep) return;
 
-                counter += Time.deltaTime * speed;
+                Counter += Time.deltaTime * Speed;
 
-                if (loop)
+                if (Loop)
                 {
-                    while (counter > sprites.Count)
+                    while (Counter > Sprites.Count)
                     {
-                        counter -= sprites.Count;
+                        Counter -= Sprites.Count;
                     }
                 }
-                else if (counter > sprites.Count)
+                else if (Counter > Sprites.Count)
                 {
-                    counter = sprites.Count;
-                    sleep = true;
+                    Counter = Sprites.Count;
+                    Sleep = true;
                 }
             }
         }
@@ -44,30 +44,30 @@ namespace PlatformerMVC
             _config = config;
         }
 
-        public void StartAnimation(SpriteRenderer spriteRenderer, AnimState Track, bool Loop, float Speed)
+        public void StartAnimation(SpriteRenderer spriteRenderer, AnimState track, bool loop, float speed)
         {
             if (_activeAnimations.TryGetValue(spriteRenderer, out var animation))
             {
-                animation.loop = Loop;
-                animation.speed = Speed;
-                animation.counter = 0;
-                animation.sleep = false;
+                animation.Loop = loop;
+                animation.Speed = speed;
+                animation.Counter = 0;
+                animation.Sleep = false;
 
-                if (animation.track != Track)
+                if (animation.Track != track)
                 {
-                    animation.track = Track;
-                    animation.sprites = _config.sequences.Find(sequence => sequence.track == Track).sprites;
-                    animation.counter = 0;
+                    animation.Track = track;
+                    animation.Sprites = _config.Sequences.Find(sequence => sequence.Track == track).Sprites;
+                    animation.Counter = 0;
                 }
             }
             else
             {
                 _activeAnimations.Add(spriteRenderer, new Animation()
                 {
-                    track = Track,
-                    sprites = _config.sequences.Find(sequence => sequence.track == Track).sprites,
-                    loop = Loop,
-                    speed = Speed
+                    Track = track,
+                    Sprites = _config.Sequences.Find(sequence => sequence.Track == track).Sprites,
+                    Loop = loop,
+                    Speed = speed
                 });
             }
         }
@@ -85,9 +85,9 @@ namespace PlatformerMVC
             foreach (var animation in _activeAnimations)
             {
                 animation.Value.Update();
-                if (animation.Value.counter < animation.Value.sprites.Count)
+                if (animation.Value.Counter < animation.Value.Sprites.Count)
                 {
-                    animation.Key.sprite = animation.Value.sprites[(int)animation.Value.counter];
+                    animation.Key.sprite = animation.Value.Sprites[(int)animation.Value.Counter];
                 }
             }
         }
