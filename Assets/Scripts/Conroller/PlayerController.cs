@@ -4,89 +4,104 @@ namespace PlatformerMVC
 {
     public class PlayerController
     {
+        private ContactPooler _contactPooler;
         private SpriteAnimatorController _playerAnimator;
         private AnimationConfig _config;
         private LevelObjectView _playerView;
         private Transform _playerT;
+        private Rigidbody2D _rb;
 
         private bool _isJump;
-        private bool _isMoving;
+        private bool _isMoving = false;
 
-        private float _xAxisInput;
-        private float _walkSpeed = 3f;
-        private float _animationSpeed = 13f;
+        private float _walkSpeed = 5f;
+        private float _animationSpeed = 14f;
         private float _movingTreshold = 0.1f;
-        private float _jumpForce = 9f;
+        private float _jumpForce = 8f;
         private float _jumpTreshold = 1f;
-        private float _g = -9.8f;
-        private float _groundLevel = 0.5f;
-        private float _yVelocity;
+        private float _xAxisInput;
+        private float _yVelocity = 0;
+        private float _xVelocity = 0;
+        private int _health = 100;
 
         private Vector3 _leftScale = new Vector3(-1, 1, 1);
         private Vector3 _rightScale = new Vector3(1, 1, 1);
 
-        public PlayerController(LevelObjectView player)
+        public PlayerController(InteractiveObjectView playerView)
         {
+            _playerView = playerView;
+            _playerT = playerView._transform;
+            _rb = _playerView._rb;
+
             _config = Resources.Load<AnimationConfig>("SpriteAnimCfg");
             _playerAnimator = new SpriteAnimatorController(_config);
-            _playerAnimator.StartAnimation(player._renderer, AnimState.Idle, true, _animationSpeed);
-            _playerView = player;
-            _playerT = player._transform;
+            _playerAnimator.StartAnimation(playerView._spriteRenderer, AnimState.Run, true, _animationSpeed);
+            _contactPooler = new ContactPooler(_playerView._collider);
+
+            playerView.TakeDamage += TakeBullet;
+            playerView.FinishCheck += FinishRenderer;
+
+        }
+        private void TakeBullet(BulletView bullet)
+        {
+            _health -= bullet.DamagePoint;
+        }
+        private void FinishRenderer(FinishView finish)
+        {
+            _playerView._spriteRenderer.enabled = false;
         }
 
         private void MoveTowards()
         {
-            _playerT.position += Vector3.right * (Time.deltaTime * _walkSpeed * (_xAxisInput < 0 ? -1 : 1));
+            _xVelocity += Time.deltaTime * _walkSpeed * (_xAxisInput < 0 ? -1 : 1);
+            _rb.velocity = new Vector2(_xVelocity, _yVelocity);
             _playerT.localScale = _xAxisInput < 0 ? _leftScale : _rightScale;
 
         }
-
-        public bool IsGrounded()
-        {
-            return _playerT.position.y <= _groundLevel && _yVelocity <= 0;
-        }
-        /*
         public void Update()
         {
+            if (_health <= 0)
+            {
+                _health = 0;
+                _playerView._spriteRenderer.enabled = false;
+            }
             _playerAnimator.Update();
-        }
-        */
-
-        public void Update()
-        {
-            _playerAnimator.Update();
+            _contactPooler.Update();
             _xAxisInput = Input.GetAxis("Horizontal");
             _isJump = Input.GetAxis("Vertical") > 0;
+            _yVelocity = _rb.velocity.y;
             _isMoving = Mathf.Abs(_xAxisInput) > _movingTreshold;
+
+            _playerAnimator.StartAnimation(_playerView._spriteRenderer, _isMoving ? AnimState.Run : AnimState.Idle, true, _animationSpeed);
 
             if (_isMoving)
             {
+                Debug.Log("Moving");
                 MoveTowards();
             }
-
-            if (IsGrounded())
+            else
             {
-                _playerAnimator.StartAnimation(_playerView._renderer, _isMoving ? AnimState.Run : AnimState.Idle, true, _animationSpeed);
+                _xVelocity = 0;
+                _rb.velocity = new Vector2(_xVelocity, _rb.velocity.y);
+            }
 
-                if (_isJump && _yVelocity <= 0)
+            if (_contactPooler.IsGrounded)
+            {
+                Debug.Log("Jump");
+                if (_isJump && _yVelocity <= _jumpTreshold)
                 {
-                    _yVelocity = _jumpForce;
-                }
-                else if (_yVelocity < 0)
-                {
-                    _yVelocity = 0;
-                    _playerT.position = new Vector3(_playerT.position.x, _groundLevel, _playerT.position.z);
+
+                    _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
                 }
             }
             else
             {
                 if (Mathf.Abs(_yVelocity) > _jumpTreshold)
                 {
-                    _playerAnimator.StartAnimation(_playerView._renderer, AnimState.Jump, true, _animationSpeed);
+                    _playerAnimator.StartAnimation(_playerView._spriteRenderer, AnimState.Jump, true, _animationSpeed);
                 }
-                _yVelocity += _g * Time.deltaTime;
-                _playerT.position += Vector3.up * (Time.deltaTime * _yVelocity);
             }
+
 
         }
     }
